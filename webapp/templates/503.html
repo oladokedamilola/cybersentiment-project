@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Service Unavailable (503) - CyberSentiment{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="error-container">
+                <h1 class="display-1 fw-bold text-warning">503</h1>
+                <h2 class="h4 mb-4">Service Unavailable</h2>
+                <p class="text-muted mb-4">The service is temporarily unavailable due to maintenance or high load. Please try again shortly.</p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <button onclick="window.location.reload()" class="btn btn-primary">
+                        <i class="fas fa-redo me-2"></i>Try Again
+                    </button>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home me-2"></i>Go Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

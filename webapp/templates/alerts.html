@@ -1,0 +1,23 @@
+{% extends "base_user.html" %}
+{% block title %}Alerts - CyberSentiment{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 mt-3">All Alerts</h2>
+
+{% if alerts %}
+  <ul class="list-group shadow-sm rounded-4 border-0">
+    {% for alert in alerts %}
+      <li class="list-group-item d-flex justify-content-between align-items-start">
+        <div>
+          <strong>{{ alert.platform|capitalize }}:</strong> {{ alert.text }}
+          <br>
+          <small class="text-muted">{{ alert.timestamp.strftime('%b %d, %Y %H:%M') }}</small>
+        </div>
+        <span class="badge bg-danger rounded-pill">Alert</span>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <div class="alert alert-secondary">No alerts available.</div>
+{% endif %}
+{% endblock %}

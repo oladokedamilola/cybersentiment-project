@@ -1,0 +1,246 @@
+# ============================================
+# CYBERSECURITY SENTIMENT ANALYSIS PROJECT
+# ============================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# --- Virtual Environment ---
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+env.bak/
+.venv.bak/
+
+# Environment variables (CRITICAL - NEVER COMMIT THESE)
+.env
+.env.*
+!.env.example
+.env.local
+.env.production
+.env.development
+.env.test
+.env.staging
+
+# Environment backup files
+.env.backup
+.env.bak
+.env.old
+
+# --- Jupyter / Notebooks ---
+.ipynb_checkpoints/
+*.ipynb_save
+jupyter-notebooks/
+notebooks/.ipynb_checkpoints/
+
+# --- Data Files (Raw & Processed) ---
+# Raw data - never commit actual data
+data/raw/
+data/raw/**/*
+!data/raw/.gitkeep
+
+# Processed data - can be regenerated
+data/processed/
+data/processed/**/*
+!data/processed/.gitkeep
+
+# Temporary/ingested data
+data/raw/ingested/
+data/temp/
+data/tmp/
+
+# Data file formats
+*.csv
+*.json
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+
+# --- Machine Learning Models ---
+# Trained models (large files, can be retrained)
+models/
+models/**/*
+!models/.gitkeep
+!models/README.md
+
+# Model files
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.hdf5
+*.pt
+*.pth
+*.model
+*.mlmodel
+*.onnx
+
+# Training checkpoints
+checkpoints/
+runs/
+logs/
+wandb/
+mlruns/
+
+# --- Flask / Web Application ---
+# Database
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+flask.log
+
+# Static files (if using collectstatic)
+staticfiles/
+assets/compiled/
+
+# Uploads
+uploads/
+media/
+tmp/
+temp/
+
+# Cache
+.cache/
+
+# --- IDE & Editor Files ---
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Sublime Text
+*.sublime-*
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Eclipse
+.pydevproject
+.project
+.metadata
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# --- OS Generated Files ---
+# macOS
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+*~
+
+# --- Documentation ---
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+
+# --- Testing ---
+.coverage
+.pytest_cache/
+.tox/
+nosetests.xml
+htmlcov/
+
+# --- Package Management ---
+Pipfile
+Pipfile.lock
+poetry.lock
+pyproject.toml
+
+# --- Misc ---
+*.bak
+*.backup
+*.orig
+*.rej
+*.save
+*~
+\#*#
+.#*
+
+# --- Project Specific ---
+# Plots and reports (can be regenerated)
+plots/
+reports/
+output/
+
+# API keys and secrets (additional protection)
+*_key
+*_token
+*_secret
+*_password
+credentials*
+config*.py
+secrets.py
+
+# Certificate files
+*.pem
+*.key
+*.crt
+*.cer

@@ -1,0 +1,350 @@
+/* =============================================================================
+   CyberSentiment - styles.css
+   Design direction: Data & Trust Professional
+   Palette: Teal (#0d8b8b), Soft Green (#2fbf71), Slate (#1f2a37), Light Gray (#f6f8fa)
+   Fonts: Inter (prefer), fallback sans-serif
+   ============================================================================= */
+
+/* Import font (optionally add in base HTML <head> instead) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+/* ------------------------------
+   Root variables
+   ------------------------------ */
+:root {
+  --brand-deep: #0d8b8b;      /* primary teal */
+  --brand-acc:  #2fbf71;      /* accent green */
+  --slate:      #1f2a37;      /* dark slate */
+  --muted:      #6b7a86;      /* muted text */
+  --bg:         #f6f8fa;      /* page background */
+  --card-bg:    #ffffff;
+  --surface:    #ffffff;
+  --glass:      rgba(255,255,255,0.85);
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
+  --shadow-xs:  0 1px 3px rgba(31,42,55,0.06);
+  --shadow-sm:  0 6px 18px rgba(31,42,55,0.08);
+  --shadow-lg:  0 20px 50px rgba(31,42,55,0.12);
+  --max-width:  1200px;
+  --container-pad: 24px;
+}
+
+/* ------------------------------
+   Global reset / base
+   ------------------------------ */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--slate);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.45;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container utility */
+.container-max {
+  max-width: var(--max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-pad);
+  padding-right: var(--container-pad);
+}
+
+/* ------------------------------
+   Navbar
+   ------------------------------ */
+.navbar {
+  background: linear-gradient(90deg, rgba(13,139,139,0.95), rgba(47,191,113,0.95));
+  box-shadow: var(--shadow-sm);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.navbar .navbar-brand {
+  font-weight: 700;
+  color: #fff !important;
+  letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
+}
+.navbar .navbar-nav .nav-link {
+  color: rgba(255,255,255,0.92) !important;
+  margin-left: 8px;
+  font-weight: 500;
+}
+.navbar .nav-link:hover { opacity: .95; }
+
+/* Small brand mark */
+.brand-mark {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  margin-right: 10px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+  box-shadow: inset 0 -2px 0 rgba(255,255,255,0.03);
+  align-self: center;
+}
+
+/* ------------------------------
+   Hero section
+   ------------------------------ */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 80vh;
+  color: #fff;
+  overflow: hidden;
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}
+
+/* Increase height on mobile screens */
+@media (max-width: 768px) {
+  .hero {
+    min-height: 85vh; /* Increased from 80vh to 85vh on mobile */
+  }
+}
+
+/* Further increase height on very small screens */
+@media (max-width: 480px) {
+  .hero {
+    min-height: 88vh; /* Even taller on very small screens */
+  }
+}
+
+.hero__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  z-index: 0;
+  filter: saturate(1.05) contrast(1.02);
+}
+
+/* Subtle gradient overlay for readability */
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(31,42,55,0.42) 0%, rgba(13,139,139,0.19) 60%, rgba(13,139,139,0.12) 100%);
+  z-index: 1;
+}
+
+/* Hero content */
+.hero__content {
+  position: relative;
+  z-index: 2;
+  padding: 64px 24px;
+  max-width: 1100px;
+}
+.hero h1 {
+  font-size: clamp(28px, 4.6vw, 44px);
+  line-height: 1.08;
+  font-weight: 800;
+  margin: 0 0 10px;
+  text-shadow: 0 6px 30px rgba(13,139,139,0.12);
+}
+.hero p.lead {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.92);
+  margin-bottom: 18px;
+}
+
+
+
+/* CTA */
+.btn-cta {
+  background: var(--surface);
+  color: var(--slate);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  box-shadow: var(--shadow-xs);
+  border: none;
+}
+.btn-primary-ghost {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+/* ------------------------------
+   Cards and widgets
+   ------------------------------ */
+.card-cs {
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 18px;
+  color: var(--slate);
+}
+.kpi {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.kpi .value {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+.kpi .label {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* small chart container */
+.widget-chart {
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ------------------------------
+   Alerts
+   ------------------------------ */
+.alert-high {
+  background: linear-gradient(90deg, rgba(255, 82, 82, 0.08), rgba(255, 82, 82, 0.04));
+  border-left: 4px solid rgba(255,82,82,0.9);
+  color: #7a1a1a;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+/* ------------------------------
+   Tables
+   ------------------------------ */
+.table-cs {
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-xs);
+  overflow: hidden;
+}
+.table-cs thead th {
+  background: linear-gradient(90deg, rgba(13,139,139,0.03), rgba(47,191,113,0.03));
+  color: var(--slate);
+  font-weight: 700;
+  border: none;
+}
+.table-cs tbody td {
+  border-top: 1px solid #eef2f4;
+}
+
+/* ------------------------------
+   Forms & inputs
+   ------------------------------ */
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #e6eef0;
+  padding: 10px 12px;
+}
+.form-control:focus {
+  box-shadow: 0 6px 18px rgba(13,139,139,0.06);
+  border-color: var(--brand-deep);
+  outline: none;
+}
+.btn-primary {
+  background: var(--brand-deep);
+  border-color: var(--brand-deep);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+.btn-outline-accent {
+  background: transparent;
+  border: 1px solid var(--brand-deep);
+  color: var(--brand-deep);
+}
+
+/* ------------------------------
+   Dashboard layout helpers
+   ------------------------------ */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+/* small responsive card for list items */
+.list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.list-item .meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* ------------------------------
+   Utility classes
+   ------------------------------ */
+.text-muted { color: var(--muted) !important; }
+.small { font-size: 0.875rem; }
+.center { text-align: center; }
+
+/* ------------------------------
+   Responsive rules
+   ------------------------------ */
+@media (max-width: 992px) {
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .hero__content { padding: 48px 18px; }
+}
+@media (max-width: 640px) {
+  .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  .hero { min-height: 46vh; }
+  .navbar .navbar-nav { margin-top: 8px; }
+  .hero h1 { font-size: 26px; }
+}
+
+/* ------------------------------
+   Small accessibility tweaks
+   ------------------------------ */
+a:focus, button:focus, input:focus { outline-offset: 2px; }
+
+/* ------------------------------
+   Minor Bootstrap-friendly overrides
+   ------------------------------ */
+.btn:focus { box-shadow: 0 6px 18px rgba(13,139,139,0.07) !important; }
+.card { border: none; }
+
+
+
+
+/* Error page styling */
+.error-container {
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.error-container h1 {
+    font-size: 8rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .error-container h1 {
+        font-size: 5rem;
+    }
+}
+/* End of file */

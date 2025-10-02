@@ -1,0 +1,50 @@
+{% extends "base_user.html" %}
+{% block title %}Search Posts - CyberSentiment{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 mt-3">Search Social Media Posts</h2>
+
+<form method="get" class="mb-4">
+  <div class="row g-3">
+    <div class="col-md-4">
+      {{ form.keyword.label(class="form-label") }}
+      {{ form.keyword(class="form-control") }}
+    </div>
+    <div class="col-md-2">
+      {{ form.platform.label(class="form-label") }}
+      {{ form.platform(class="form-select") }}
+    </div>
+    <div class="col-md-2">
+      {{ form.sentiment.label(class="form-label") }}
+      {{ form.sentiment(class="form-select") }}
+    </div>
+    <div class="col-md-2">
+      {{ form.date_from.label(class="form-label") }}
+      {{ form.date_from(class="form-control", type="date") }}
+    </div>
+    <div class="col-md-2">
+      {{ form.date_to.label(class="form-label") }}
+      {{ form.date_to(class="form-control", type="date") }}
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary mt-3">{{ form.submit.label.text }}</button>
+</form>
+
+{% if posts %}
+  <ul class="list-group">
+    {% for post in posts %}
+      <li class="list-group-item">
+        <strong>{{ post.platform|capitalize }}</strong> &mdash; 
+        <small class="text-muted">{{ post.timestamp.strftime('%b %d, %Y %H:%M') }}</small>
+        <p>{{ post.text }}</p>
+        <span class="badge bg-{{ 'success' if post.sentiment == 'positive' else 'secondary' if post.sentiment == 'neutral' else 'danger' }}">
+          {{ post.sentiment.capitalize() }}
+        </span>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="text-muted">No posts found matching the criteria.</p>
+{% endif %}
+
+{% endblock %}

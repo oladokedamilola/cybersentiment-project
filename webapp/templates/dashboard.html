@@ -1,0 +1,131 @@
+{% extends "base_user.html" %}
+{% block title %}Dashboard - CyberSentiment{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 mt-3">Dashboard</h2>
+<p class="mb-4">Welcome back, <strong>{{ current_user.first_name or current_user.username }}</strong>!</p>
+
+<!-- Profile Card -->
+<div class="card shadow-sm rounded-4 border-0 mb-4">
+  <div class="card-body d-flex flex-column flex-md-row align-items-center">
+    <!-- Profile Image -->
+    <div class="text-center flex-shrink-0 mb-3 mb-md-0 me-md-4" style="min-width: 130px;">
+      {% if current_user.profile_image %}
+        <img src="{{ url_for('static', filename='uploads/' + current_user.profile_image) }}"
+             alt="Profile Image"
+             class="rounded-circle shadow-sm"
+             style="width: 120px; height: 120px; object-fit: cover;">
+      {% else %}
+        <img src="{{ url_for('static', filename='images/default-avatar.jpg') }}"
+             alt="Default Avatar"
+             class="rounded-circle shadow-sm"
+             style="width: 120px; height: 120px; object-fit: cover;">
+      {% endif %}
+    </div>
+
+    <!-- User Details -->
+    <div class="flex-grow-1 text-center text-md-start">
+      <h4 class="fw-bold mb-1">{{ current_user.get_full_name() or current_user.username }}</h4>
+      <p class="text-muted mb-3 mb-md-2">{{ current_user.email }}</p>
+      <div class="row text-muted small g-2 justify-content-center justify-content-md-start">
+        <div class="col-6 col-sm-4 col-md-3 d-flex align-items-center">
+          <i class="bi bi-person-badge me-1 fs-5"></i> Role: {{ current_user.role or "Analyst" }}
+        </div>
+        <div class="col-6 col-sm-4 col-md-3 d-flex align-items-center">
+          <i class="bi bi-telephone me-1 fs-5"></i> Phone: {{ current_user.phone_number or "N/A" }}
+        </div>
+        <div class="col-6 col-sm-4 col-md-3 d-flex align-items-center">
+          <i class="bi bi-geo-alt me-1 fs-5"></i> Location: {{ current_user.location or "N/A" }}
+        </div>
+        <div class="col-6 col-sm-4 col-md-3 d-flex align-items-center">
+          <i class="bi bi-calendar-check me-1 fs-5"></i> Joined: {{ current_user.date_joined.strftime('%b %d, %Y') if current_user.date_joined else "N/A" }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-4 mb-4">
+  <!-- Total Posts -->
+  <div class="col-12 col-md-4">
+    <div class="card shadow-sm rounded-4 border-0 h-100 text-center">
+      <div class="card-body">
+        <div class="mb-3"><i class="bi bi-bar-chart-fill fs-2 text-primary"></i></div>
+        <h6 class="card-title">Total Analyzed Posts</h6>
+        <p class="fs-3 fw-semibold text-dark mb-0">
+          {{ sentiment_counts.positive + sentiment_counts.neutral + sentiment_counts.negative }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- High Risk Posts -->
+  <div class="col-12 col-md-4">
+    <div class="card shadow-sm rounded-4 border-0 h-100 text-center">
+      <div class="card-body">
+        <div class="mb-3"><i class="bi bi-exclamation-triangle-fill fs-2 text-danger"></i></div>
+        <h6 class="card-title">Negative Sentiment Alerts</h6>
+        <p class="fs-3 fw-semibold text-danger mb-0">{{ sentiment_counts.negative or 0 }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Positive Sentiment -->
+  <div class="col-12 col-md-4">
+    <div class="card shadow-sm rounded-4 border-0 h-100 text-center">
+      <div class="card-body">
+        <div class="mb-3"><i class="bi bi-emoji-smile-fill fs-2 text-success"></i></div>
+        <h6 class="card-title">Positive Sentiment Posts</h6>
+        <p class="fs-3 fw-semibold text-success mb-0">{{ sentiment_counts.positive or 0 }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Alerts Section -->
+<div class="card shadow-sm rounded-4 border-0 mb-4">
+  <div class="card-body">
+    <h5 class="card-title mb-3">Latest Alerts</h5>
+    {% if latest_alerts %}
+      <ul class="list-group list-group-flush mb-3" style="max-height: 220px; overflow-y:auto;">
+        {% for alert in latest_alerts %}
+          <li class="list-group-item">
+            <strong>{{ alert.platform|capitalize }}:</strong> {{ alert.text|truncate(80) }}
+            <br>
+            <small class="text-muted">{{ alert.timestamp.strftime('%b %d, %Y %H:%M') }}</small>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-muted mb-3">No alerts to show.</p>
+    {% endif %}
+    <a href="{{ url_for('alerts.index') }}" class="btn btn-sm btn-danger">View All Alerts</a>
+  </div>
+</div>
+
+<!-- Notifications Section -->
+<div class="card shadow-sm rounded-4 border-0">
+  <div class="card-body">
+    <h5 class="card-title mb-3">Unread Notifications</h5>
+    {% if unread_notifications %}
+      <ul class="list-group list-group-flush mb-3" style="max-height: 220px; overflow-y:auto;">
+        {% for notif in unread_notifications %}
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div>
+              <i class="bi bi-bell-fill text-warning me-2"></i>
+              {{ notif.message|truncate(80) }}
+              <br>
+              <small class="text-muted">{{ notif.timestamp.strftime('%b %d, %Y %H:%M') }}</small>
+            </div>
+            <a href="{{ url_for('notifications.mark_read', notif_id=notif.id) }}" class="badge bg-success text-decoration-none">Mark Read</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-muted mb-3">You're all caught up!</p>
+    {% endif %}
+    <a href="{{ url_for('notifications.index') }}" class="btn btn-sm btn-primary">View All Notifications</a>
+  </div>
+</div>
+{% endblock %}

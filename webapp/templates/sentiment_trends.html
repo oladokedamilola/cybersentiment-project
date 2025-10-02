@@ -1,0 +1,163 @@
+{% extends "base_user.html" %}
+{% block title %}Sentiment Trends - CyberSentiment{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 mt-3">Sentiment Trends</h2>
+<p class="text-muted">Tracking sentiment activity across platforms. Last updated: <strong>{{ last_updated }}</strong></p>
+
+<!-- Filters -->
+<form method="get" class="mb-4 row g-3 align-items-end">
+  <div class="col-md-3">
+    <label for="platform" class="form-label">Platform:</label>
+    <select name="platform" id="platform" class="form-select">
+      <option value="" {% if not platform %}selected{% endif %}>All</option>
+      <option value="twitter" {% if platform == 'twitter' %}selected{% endif %}>Twitter</option>
+      <option value="reddit" {% if platform == 'reddit' %}selected{% endif %}>Reddit</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <label for="days" class="form-label">Days:</label>
+    <input type="number" min="1" max="365" name="days" id="days" value="{{ days }}" class="form-control">
+  </div>
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-primary w-100">Update</button>
+  </div>
+</form>
+
+<!-- Summary Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card shadow-sm rounded-4 border-0 text-center">
+      <div class="card-body">
+        <h6 class="card-title text-muted">Total Posts</h6>
+        <p class="fs-3 fw-bold text-dark mb-0">{{ total_posts }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm rounded-4 border-0 text-center">
+      <div class="card-body">
+        <h6 class="card-title text-muted">Most Recent Period</h6>
+        <p class="fs-6 mb-0">{{ days }} days</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow-sm rounded-4 border-0 text-center">
+      <div class="card-body">
+        <h6 class="card-title text-muted">Platform</h6>
+        <p class="fs-6 mb-0">{{ platform|capitalize if platform else "All" }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4">
+  <!-- Line Chart -->
+  <div class="col-12 col-lg-8">
+    <div class="card shadow-sm rounded-4 border-0 h-100">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Sentiment Over Time</h5>
+        <canvas id="sentimentChart" height="150"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doughnut Chart -->
+  <div class="col-12 col-lg-4">
+    <div class="card shadow-sm rounded-4 border-0 h-100">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Sentiment Distribution</h5>
+        <canvas id="sentimentDistributionChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Line Chart
+  const ctx = document.getElementById('sentimentChart').getContext('2d');
+  const sentimentChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: {{ dates | safe }},
+      datasets: [
+        {
+          label: 'Positive',
+          data: {{ positive_counts | safe }},
+          borderColor: '#198754',
+          backgroundColor: 'rgba(25,135,84,0.15)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3
+        },
+        {
+          label: 'Neutral',
+          data: {{ neutral_counts | safe }},
+          borderColor: '#6c757d',
+          backgroundColor: 'rgba(108,117,125,0.15)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3
+        },
+        {
+          label: 'Negative',
+          data: {{ negative_counts | safe }},
+          borderColor: '#dc3545',
+          backgroundColor: 'rgba(220,53,69,0.15)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: {
+          mode: 'index',
+          intersect: false
+        }
+      },
+      interaction: { mode: 'index', intersect: false },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+
+  // Doughnut Chart
+  const distCtx = document.getElementById('sentimentDistributionChart').getContext('2d');
+  const sentimentDistributionChart = new Chart(distCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Positive', 'Neutral', 'Negative'],
+      datasets: [{
+        data: [
+          {{ positive_counts | sum }},
+          {{ neutral_counts | sum }},
+          {{ negative_counts | sum }}
+        ],
+        backgroundColor: [
+          'rgba(25,135,84,0.7)',
+          'rgba(108,117,125,0.7)',
+          'rgba(220,53,69,0.7)'
+        ],
+        borderColor: [
+          '#198754',
+          '#6c757d',
+          '#dc3545'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends "base_user.html" %}
+
+{% block title %}My Profile - CyberSentiment{% endblock %}
+
+{% block content %}
+<div class="container py-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-9">
+      <div class="card shadow-sm rounded-4 border-0">
+        <div class="card-header bg-primary text-white rounded-top-4">
+          <h5 class="mb-0">Account Settings</h5>
+        </div>
+        <div class="card-body px-5 py-4">
+          <form method="post" enctype="multipart/form-data" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="row">
+              <!-- PROFILE IMAGE SECTION -->
+              <div class="col-md-4 text-center mb-4 mb-md-0">
+                <img id="profilePreview"
+                     src="{{ url_for('static', filename='uploads/' ~ current_user.profile_image) if current_user.profile_image else url_for('static', filename='images/default-avatar.jpg') }}"
+                     alt="Profile Image"
+                     class="rounded-circle shadow-sm mb-3"
+                     style="width:130px;height:130px;object-fit:cover;cursor:pointer;"
+                     onclick="document.getElementById('id_profile_image').click();">
+
+                {{ form.profile_image(class="form-control d-none", id="id_profile_image", onchange="previewImage(event)") }}
+
+                <div>
+                  <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('id_profile_image').click();">
+                    Change Image
+                  </button>
+                </div>
+
+                {% if form.profile_image.errors %}
+                  <div class="text-danger small mt-2">
+                    {{ form.profile_image.errors[0] }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- PROFILE FIELDS SECTION -->
+              <div class="col-md-8">
+                <div class="row g-3">
+                  <!-- Username -->
+                  <div class="col-md-6">
+                    {{ form.username.label(class="form-label") }}
+                    {{ form.username(class="form-control") }}
+                    {% if form.username.errors %}
+                      <div class="text-danger small">{{ form.username.errors[0] }}</div>
+                    {% endif %}
+                  </div>
+
+                  <!-- Email -->
+                  <div class="col-md-6">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control") }}
+                    {% if form.email.errors %}
+                      <div class="text-danger small">{{ form.email.errors[0] }}</div>
+                    {% endif %}
+                  </div>
+
+                  <!-- First Name -->
+                  <div class="col-md-6">
+                    {{ form.first_name.label(class="form-label") }}
+                    {{ form.first_name(class="form-control") }}
+                    {% if form.first_name.errors %}
+                      <div class="text-danger small">{{ form.first_name.errors[0] }}</div>
+                    {% endif %}
+                  </div>
+
+                  <!-- Last Name -->
+                  <div class="col-md-6">
+                    {{ form.last_name.label(class="form-label") }}
+                    {{ form.last_name(class="form-control") }}
+                    {% if form.last_name.errors %}
+                      <div class="text-danger small">{{ form.last_name.errors[0] }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="mt-4 text-end">
+              <button type="submit" class="btn btn-success px-4">
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content rounded-4">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imagePreviewModalLabel">Preview Profile Image</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body d-flex justify-content-center align-items-center">
+        <div style="width: 220px; height: 220px; overflow: hidden; border-radius: 50%;">
+          <img id="modalPreview" src="" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+      </div>
+
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('id_profile_image').click();">Change</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function previewImage(event) {
+    const input = event.target;
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      input.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const onPageImg = document.getElementById('profilePreview');
+      if (onPageImg) {
+        onPageImg.src = e.target.result;
+        onPageImg.style.display = 'inline-block';
+      }
+
+      const modalPreview = document.getElementById('modalPreview');
+      if (modalPreview) modalPreview.src = e.target.result;
+
+      const modalEl = document.getElementById('imagePreviewModal');
+      const bsModal = new bootstrap.Modal(modalEl);
+      bsModal.show();
+    };
+    reader.readAsDataURL(file);
+  }
+</script>
+{% endblock %}
+
+
+{% block footer %}
+<footer class="footer mt-5 py-4 bg-dark text-light rounded" style="margin-top: 150px;">
+    <div class="container text-center">
+        <small>&copy; {{ current_year }} StaffHub. All rights reserved.</small>
+    </div>
+</footer>
+{% endblock %}

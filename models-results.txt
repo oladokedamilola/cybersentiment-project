@@ -1,0 +1,51 @@
+🔹 Training set size after ADASYN: 998 rows
+
+🔹 Training logistic_regression...
+              precision    recall  f1-score   support
+
+    Negative       1.00      1.00      1.00        37
+     Neutral       0.92      1.00      0.96        11
+    Positive       1.00      0.99      0.99        83
+
+    accuracy                           0.99       131
+   macro avg       0.97      1.00      0.98       131
+weighted avg       0.99      0.99      0.99       131
+
+
+🔹 Training random_forest...
+              precision    recall  f1-score   support
+
+    Negative       1.00      0.81      0.90        37
+     Neutral       0.57      0.36      0.44        11
+    Positive       0.88      1.00      0.94        83
+
+    accuracy                           0.89       131
+   macro avg       0.82      0.72      0.76       131
+weighted avg       0.89      0.89      0.88       131
+
+
+🔹 Training mlp...
+              precision    recall  f1-score   support
+
+    Negative       1.00      0.92      0.96        37
+     Neutral       0.83      0.45      0.59        11
+    Positive       0.91      1.00      0.95        83
+
+    accuracy                           0.93       131
+   macro avg       0.92      0.79      0.83       131
+weighted avg       0.93      0.93      0.92       131
+
+
+🔹 Training stacking_ensemble...
+              precision    recall  f1-score   support
+
+    Negative       1.00      1.00      1.00        37
+     Neutral       1.00      0.45      0.62        11
+    Positive       0.93      1.00      0.97        83
+
+    accuracy                           0.95       131
+   macro avg       0.98      0.82      0.86       131
+weighted avg       0.96      0.95      0.95       131
+
+
+✅ All models & vectorizer saved.
