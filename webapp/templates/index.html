@@ -10,8 +10,13 @@
     <div class="container position-relative" style="z-index: 1;">
         <h1 class="display-4 fw-bold mb-3">Detect Cyber Threats in Real-Time</h1>
         <p class="lead mb-4">CyberSentiment uses AI-powered sentiment analysis to uncover harmful trends, toxic behavior, and potential risks across digital platforms.</p>
-        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg me-2">Get Started</a>
-        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">Login</a>
+        {% if current_user.is_authenticated %}
+            <a class="btn btn-primary btn-lg me-2" href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+        {% else %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg me-2">Get Started</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">Login</a>
+        {% endif %}
+        
     </div>
 </section>
 
@@ -81,7 +86,12 @@
     <div class="container">
         <h2 class="fw-bold mb-3">Ready to secure your digital space?</h2>
         <p class="mb-4">Join CyberSentiment today and empower yourself with AI-driven protection.</p>
-        <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg me-2">Sign Up Free</a>
+        {% if current_user.is_authenticated %}
+            <a class="btn btn-primary btn-lg me-2" href="{{ url_for('dashboard.index') }}">You are already signed in, go to your Dashboard</a></li>
+        {% else %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-success btn-lg me-2">Sign Up Free</a>
+        {% endif %}
+       
     </div>
 </section>
 
