@@ -1,0 +1,203 @@
+{% extends "base_user.html" %}
+{% block title %}Notifications - CyberSentiment{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="mb-0">Notifications</h2>
+    {% if unread_notifications %}
+        <a href="{{ url_for('notifications.mark_all_read') }}" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-check-all me-1"></i> Mark All as Read
+        </a>
+    {% endif %}
+</div>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm rounded-4 border-0 text-center">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Total Notifications</h6>
+                <p class="fs-3 fw-bold text-dark mb-0">{{ pagination.total }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm rounded-4 border-0 text-center">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Unread</h6>
+                <p class="fs-3 fw-bold text-warning mb-0">{{ unread_notifications|length }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm rounded-4 border-0 text-center">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Showing</h6>
+                <p class="fs-3 fw-bold text-info mb-0">{{ all_notifications|length }}</p>
+                <small class="text-muted">Page {{ pagination.page }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results Info -->
+<div class="mb-3">
+    <p class="text-muted">
+        Showing {{ pagination.first }} - {{ pagination.last }} of {{ pagination.total }} notifications
+    </p>
+</div>
+
+<!-- Notifications List -->
+{% if all_notifications %}
+<div class="card shadow-sm rounded-4 border-0">
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+            {% for notification in all_notifications %}
+                <div class="list-group-item {% if notification.id not in read_ids %}bg-light{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1 me-3">
+                            <div class="d-flex align-items-center mb-2">
+                                {% if notification.id not in read_ids %}
+                                    <span class="badge bg-warning me-2">New</span>
+                                {% else %}
+                                    <span class="badge bg-success me-2">Read</span>
+                                {% endif %}
+                                <small class="text-muted">
+                                    <i class="bi bi-clock me-1"></i>
+                                    {{ notification.timestamp.strftime('%b %d, %Y %H:%M') }}
+                                </small>
+                            </div>
+                            
+                            <p class="mb-2 {% if notification.id not in read_ids %}fw-semibold{% endif %}">
+                                {{ notification.message }}
+                            </p>
+                            
+                            {% if notification.post_id %}
+                                <div class="mt-2">
+                                    <a href="{{ url_for('posts.post_detail', post_id=notification.post_id) }}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i> View Post
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex flex-column align-items-end">
+                            {% if notification.id not in read_ids %}
+                                <a href="{{ url_for('notifications.mark_read', notif_id=notification.id) }}" 
+                                   class="btn btn-success btn-sm mb-2">
+                                    <i class="bi bi-check-lg me-1"></i> Mark Read
+                                </a>
+                            {% endif %}
+                            
+                            {% if notification.post %}
+                                <small class="text-muted text-nowrap">
+                                    <i class="bi bi-{{ 'twitter' if notification.post.platform == 'twitter' else 'reddit' }} me-1"></i>
+                                    {{ notification.post.platform|capitalize }}
+                                </small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Pagination Controls -->
+{% if pagination.pages > 1 %}
+<nav aria-label="Notifications pagination" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if pagination.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('notifications.index', page=pagination.prev_num) }}">Previous</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+        {% endif %}
+
+        {% for page_num in pagination.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+            {% if page_num %}
+                {% if page_num == pagination.page %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('notifications.index', page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% endif %}
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">…</span>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if pagination.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('notifications.index', page=pagination.next_num) }}">Next</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<!-- Empty State -->
+{% else %}
+<div class="card shadow-sm rounded-4 border-0">
+    <div class="card-body text-center py-5">
+        <div class="mb-4">
+            <i class="bi bi-bell-slash fs-1 text-muted"></i>
+        </div>
+        <h5 class="text-muted mb-3">No Notifications</h5>
+        <p class="text-muted mb-4">You don't have any notifications at the moment.</p>
+        <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary">
+            <i class="bi bi-house me-1"></i> Go to Dashboard
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.list-group-item {
+    border: none;
+    padding: 1.25rem 1.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa !important;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+    border-left: 4px solid #ffc107;
+}
+
+.list-group-item:not(.bg-light) {
+    border-left: 4px solid #dee2e6;
+}
+</style>
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+{% endblock %}

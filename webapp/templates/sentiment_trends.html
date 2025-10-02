@@ -26,7 +26,7 @@
 
 <!-- Summary Stats -->
 <div class="row g-3 mb-4">
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="card shadow-sm rounded-4 border-0 text-center">
       <div class="card-body">
         <h6 class="card-title text-muted">Total Posts</h6>
@@ -34,42 +34,86 @@
       </div>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="card shadow-sm rounded-4 border-0 text-center">
       <div class="card-body">
-        <h6 class="card-title text-muted">Most Recent Period</h6>
-        <p class="fs-6 mb-0">{{ days }} days</p>
+        <h6 class="card-title text-muted">Positive</h6>
+        <p class="fs-3 fw-bold text-success mb-0">{{ total_positive }}</p>
       </div>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <div class="card shadow-sm rounded-4 border-0 text-center">
       <div class="card-body">
-        <h6 class="card-title text-muted">Platform</h6>
-        <p class="fs-6 mb-0">{{ platform|capitalize if platform else "All" }}</p>
+        <h6 class="card-title text-muted">Neutral</h6>
+        <p class="fs-3 fw-bold text-secondary mb-0">{{ total_neutral }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm rounded-4 border-0 text-center">
+      <div class="card-body">
+        <h6 class="card-title text-muted">Negative</h6>
+        <p class="fs-3 fw-bold text-danger mb-0">{{ total_negative }}</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Charts Row -->
-<div class="row g-4">
-  <!-- Line Chart -->
-  <div class="col-12 col-lg-8">
-    <div class="card shadow-sm rounded-4 border-0 h-100">
+<!-- Line Chart - Full Width -->
+<div class="row g-4 mb-4">
+  <div class="col-12">
+    <div class="card shadow-sm rounded-4 border-0">
       <div class="card-body">
         <h5 class="card-title mb-3">Sentiment Over Time</h5>
-        <canvas id="sentimentChart" height="150"></canvas>
+        <canvas id="sentimentChart" height="100"></canvas>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Doughnut Chart -->
-  <div class="col-12 col-lg-4">
-    <div class="card shadow-sm rounded-4 border-0 h-100">
+<!-- Doughnut Chart - Full Width -->
+<div class="row g-4">
+  <div class="col-12">
+    <div class="card shadow-sm rounded-4 border-0">
       <div class="card-body">
         <h5 class="card-title mb-3">Sentiment Distribution</h5>
-        <canvas id="sentimentDistributionChart" height="200"></canvas>
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <canvas id="sentimentDistributionChart" height="250"></canvas>
+          </div>
+          <div class="col-md-6">
+            <div class="ps-md-4">
+              <h6 class="text-muted mb-3">Breakdown</h6>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="d-flex align-items-center">
+                  <span class="badge bg-success me-2" style="width: 12px; height: 12px;"></span>
+                  Positive
+                </span>
+                <strong class="text-success">{{ total_positive }} ({% if total_posts > 0 %}{{ "%.1f"|format((total_positive / total_posts) * 100) }}{% else %}0{% endif %}%)</strong>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="d-flex align-items-center">
+                  <span class="badge bg-secondary me-2" style="width: 12px; height: 12px;"></span>
+                  Neutral
+                </span>
+                <strong class="text-secondary">{{ total_neutral }} ({% if total_posts > 0 %}{{ "%.1f"|format((total_neutral / total_posts) * 100) }}{% else %}0{% endif %}%)</strong>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="d-flex align-items-center">
+                  <span class="badge bg-danger me-2" style="width: 12px; height: 12px;"></span>
+                  Negative
+                </span>
+                <strong class="text-danger">{{ total_negative }} ({% if total_posts > 0 %}{{ "%.1f"|format((total_negative / total_posts) * 100) }}{% else %}0{% endif %}%)</strong>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between align-items-center">
+                <strong>Total</strong>
+                <strong class="text-dark">{{ total_posts }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -135,9 +179,9 @@
       labels: ['Positive', 'Neutral', 'Negative'],
       datasets: [{
         data: [
-          {{ positive_counts | sum }},
-          {{ neutral_counts | sum }},
-          {{ negative_counts | sum }}
+          {{ total_positive }},
+          {{ total_neutral }},
+          {{ total_negative }}
         ],
         backgroundColor: [
           'rgba(25,135,84,0.7)',
@@ -155,7 +199,10 @@
     options: {
       responsive: true,
       plugins: {
-        legend: { position: 'bottom' }
+        legend: { 
+          position: 'bottom',
+          display: false // Hide default legend since we have custom breakdown
+        }
       }
     }
   });

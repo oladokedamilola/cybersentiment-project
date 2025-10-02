@@ -26,9 +26,9 @@ def create_app():
 
     login_manager.login_view = "auth.login"
 
-    # Import context processor
-    from webapp.app.context_processor import unread_notifications
-    app.context_processor(unread_notifications)
+    # Import context processor - UPDATED
+    from webapp.app.context_processor import unread_counts
+    app.context_processor(unread_counts)
 
     # Import and register blueprints (fixed imports)
     from webapp.app.main.routes import main_bp

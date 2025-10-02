@@ -2,22 +2,109 @@
 {% block title %}Alerts - CyberSentiment{% endblock %}
 
 {% block content %}
-<h2 class="mb-4 mt-3">All Alerts</h2>
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <h2 class="mb-0">All Alerts</h2>
+    {% if alerts and read_alert_ids|length < alerts|length %}
+        <a href="{{ url_for('alerts.mark_all_read') }}" class="btn btn-outline-success btn-sm">
+            Mark All as Read
+        </a>
+    {% endif %}
+</div>
 
 {% if alerts %}
+  <div class="mb-3">
+    <p class="text-muted">Showing {{ pagination.first }} - {{ pagination.last }} of {{ pagination.total }} alerts</p>
+  </div>
+
   <ul class="list-group shadow-sm rounded-4 border-0">
     {% for alert in alerts %}
-      <li class="list-group-item d-flex justify-content-between align-items-start">
-        <div>
-          <strong>{{ alert.platform|capitalize }}:</strong> {{ alert.text }}
-          <br>
-          <small class="text-muted">{{ alert.timestamp.strftime('%b %d, %Y %H:%M') }}</small>
+      <li class="list-group-item d-flex justify-content-between align-items-start {% if alert.id in read_alert_ids %}bg-light{% endif %}">
+        <div class="flex-grow-1">
+          <a href="{{ url_for('posts.post_detail', post_id=alert.post_id) }}" class="text-decoration-none text-dark">
+            <div class="alert-clickable">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <strong>Post ID: {{ alert.post_id }}</strong>
+                  {% if alert.id in read_alert_ids %}
+                    <span class="badge bg-success ms-2">Read</span>
+                  {% endif %}
+                </div>
+              </div>
+              <p class="mb-1 mt-2">{{ alert.reason }}</p>
+              <small class="text-muted">{{ alert.timestamp.strftime('%b %d, %Y %H:%M') }}</small>
+            </div>
+          </a>
         </div>
-        <span class="badge bg-danger rounded-pill">Alert</span>
+        <div class="d-flex flex-column align-items-end ms-3">
+          <span class="badge bg-danger rounded-pill mb-2">Alert</span>
+          {% if alert.id not in read_alert_ids %}
+            <a href="{{ url_for('alerts.mark_read', alert_id=alert.id) }}" class="btn btn-success btn-sm">
+              Mark Read
+            </a>
+          {% else %}
+            <span class="badge bg-success">Read</span>
+          {% endif %}
+        </div>
       </li>
     {% endfor %}
   </ul>
+
+  <!-- Pagination Controls -->
+  {% if pagination.pages > 1 %}
+  <nav aria-label="Alerts pagination" class="mt-4">
+    <ul class="pagination justify-content-center">
+      {% if pagination.has_prev %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('alerts.index', page=pagination.prev_num, platform=platform) }}">Previous</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <span class="page-link">Previous</span>
+        </li>
+      {% endif %}
+
+      {% for page_num in pagination.iter_pages(left_edge=2, left_current=2, right_current=3, right_edge=2) %}
+        {% if page_num %}
+          {% if page_num == pagination.page %}
+            <li class="page-item active">
+              <span class="page-link">{{ page_num }}</span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="{{ url_for('alerts.index', page=page_num, platform=platform) }}">{{ page_num }}</a>
+            </li>
+          {% endif %}
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">…</span>
+          </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if pagination.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('alerts.index', page=pagination.next_num, platform=platform) }}">Next</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <span class="page-link">Next</span>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
 {% else %}
   <div class="alert alert-secondary">No alerts available.</div>
 {% endif %}
+
+<style>
+.alert-clickable:hover {
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 4px;
+  margin: -4px;
+  transition: background-color 0.2s ease;
+}
+</style>
 {% endblock %}

@@ -87,7 +87,6 @@ data/tmp/
 
 # --- Machine Learning Models ---
 # Trained models (large files, can be retrained)
-models/
 models/**/*
 !models/.gitkeep
 !models/README.md
@@ -226,7 +225,6 @@ pyproject.toml
 
 # --- Project Specific ---
 # Plots and reports (can be regenerated)
-plots/
 reports/
 output/
 

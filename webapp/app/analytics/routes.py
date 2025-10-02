@@ -30,10 +30,18 @@ def sentiment_trends():
     # --- Aggregate by date ---
     counts = defaultdict(lambda: {"positive": 0, "neutral": 0, "negative": 0})
     for post in posts:
-        if not post.sentiment:
+        # Use predicted_sentiment instead of sentiment (since your model has predicted_sentiment)
+        sentiment = post.predicted_sentiment
+        if not sentiment:
             continue
+        
+        # Convert sentiment to lowercase to match dictionary keys
+        sentiment_lower = sentiment.lower()
         day = post.timestamp.strftime("%Y-%m-%d")
-        counts[day][post.sentiment] += 1
+        
+        # Only count if sentiment is one of the expected values
+        if sentiment_lower in counts[day]:
+            counts[day][sentiment_lower] += 1
 
     # --- Ensure continuous date range (for cleaner charts) ---
     date_range = [ (start_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(days+1) ]
@@ -42,14 +50,22 @@ def sentiment_trends():
     neutral_counts = [counts[date]["neutral"] for date in date_range]
     negative_counts = [counts[date]["negative"] for date in date_range]
 
+    # Calculate totals for the template
+    total_positive = sum(positive_counts)
+    total_neutral = sum(neutral_counts)
+    total_negative = sum(negative_counts)
+
     return render_template(
         "sentiment_trends.html",
         platform=platform,
         days=days,
         dates=json.dumps(date_range),
-        positive_counts=json.dumps(positive_counts),
-        neutral_counts=json.dumps(neutral_counts),
-        negative_counts=json.dumps(negative_counts),
+        positive_counts=json.dumps(positive_counts),  # For JavaScript charts
+        neutral_counts=json.dumps(neutral_counts),    # For JavaScript charts
+        negative_counts=json.dumps(negative_counts),  # For JavaScript charts
         total_posts=len(posts),
+        total_positive=total_positive,  # For template calculations
+        total_neutral=total_neutral,    # For template calculations
+        total_negative=total_negative,  # For template calculations
         last_updated=end_date.strftime("%b %d, %Y %H:%M UTC"),
     )

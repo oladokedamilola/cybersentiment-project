@@ -1,0 +1,103 @@
+{% extends "base_user.html" %}
+{% block title %}Post Details - CyberSentiment{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12">
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('alerts.index') }}">Alerts</a></li>
+        <li class="breadcrumb-item active">Post Details</li>
+      </ol>
+    </nav>
+
+    <div class="card shadow-sm rounded-4 border-0">
+      <div class="card-header bg-white">
+        <h4 class="mb-0">Post Details</h4>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <strong>Platform:</strong>
+            <span class="badge bg-primary ms-2">{{ post.platform|capitalize if post.platform else "Unknown" }}</span>
+          </div>
+          <div class="col-md-6">
+            <strong>Post ID:</strong>
+            <span class="ms-2">{{ post.external_id if post.external_id else post.id }}</span>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <strong>Sentiment:</strong>
+            <span class="badge bg-{{ 'success' if post.predicted_sentiment == 'positive' else 'secondary' if post.predicted_sentiment == 'neutral' else 'danger' if post.predicted_sentiment == 'negative' else 'warning' }} ms-2">
+              {{ post.predicted_sentiment.capitalize() if post.predicted_sentiment else "Unknown" }}
+            </span>
+          </div>
+          <div class="col-md-6">
+            <strong>Vader Sentiment:</strong>
+            <span class="badge bg-{{ 'success' if post.vader_sentiment == 'positive' else 'secondary' if post.vader_sentiment == 'neutral' else 'danger' if post.vader_sentiment == 'negative' else 'warning' }} ms-2">
+              {{ post.vader_sentiment.capitalize() if post.vader_sentiment else "Unknown" }}
+            </span>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <strong>Vader Score:</strong>
+            <span class="ms-2">{{ "%.3f"|format(post.vader_score) if post.vader_score else "N/A" }}</span>
+          </div>
+          <div class="col-md-6">
+            <strong>ML Probability:</strong>
+            <span class="ms-2">{{ "%.3f"|format(post.ml_probability) if post.ml_probability else "N/A" }}</span>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <strong>Posted:</strong>
+          <span class="ms-2">{{ post.timestamp.strftime('%b %d, %Y %H:%M UTC') }}</span>
+        </div>
+
+        {% if post.title %}
+        <div class="mb-3">
+          <strong>Title:</strong>
+          <p class="mb-0 mt-1">{{ post.title }}</p>
+        </div>
+        {% endif %}
+
+        <div class="mb-3">
+          <strong>Content:</strong>
+          <div class="card mt-2">
+            <div class="card-body">
+              <p class="mb-0">{{ post.text }}</p>
+            </div>
+          </div>
+        </div>
+
+        {% if post.processed_text %}
+        <div class="mb-3">
+          <strong>Processed Text:</strong>
+          <div class="card mt-2">
+            <div class="card-body">
+              <p class="mb-0 text-muted">{{ post.processed_text }}</p>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="mt-4">
+          {% if post.risk_flag %}
+            <span class="badge bg-warning me-2">⚠️ Flagged</span>
+          {% endif %}
+          <a href="{{ url_for('posts.flag_post', post_id=post.id) }}" class="btn btn-sm btn-outline-warning me-2">
+            {{ 'Unflag' if post.risk_flag else 'Flag' }} Post
+          </a>
+          <a href="{{ url_for('posts.search') }}?keyword={{ post.external_id if post.external_id else post.id }}" class="btn btn-sm btn-outline-primary">
+            Find Similar Posts
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

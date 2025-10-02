@@ -1,0 +1,109 @@
+{% extends "base_user.html" %}
+{% block title %}Search Posts - CyberSentiment{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 mt-3">Search Social Media Posts</h2>
+
+<form method="get" class="mb-4">
+  <div class="row g-3">
+    <div class="col-md-4">
+      {{ form.keyword.label(class="form-label") }}
+      {{ form.keyword(class="form-control", placeholder="Enter keywords...") }}
+    </div>
+    <div class="col-md-2">
+      {{ form.platform.label(class="form-label") }}
+      {{ form.platform(class="form-select") }}
+    </div>
+    <div class="col-md-2">
+      {{ form.sentiment.label(class="form-label") }}
+      {{ form.sentiment(class="form-select") }}
+    </div>
+    <div class="col-md-2">
+      {{ form.date_from.label(class="form-label") }}
+      {{ form.date_from(class="form-control", type="date") }}
+    </div>
+    <div class="col-md-2">
+      {{ form.date_to.label(class="form-label") }}
+      {{ form.date_to(class="form-control", type="date") }}
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary mt-3">{{ form.submit.label.text }}</button>
+</form>
+
+{% if posts %}
+  <div class="mb-3">
+    <p class="text-muted">
+      {% if has_search_criteria %}
+        Found {{ posts|length }} post(s) matching your criteria
+      {% else %}
+        Showing latest {{ posts|length }} posts. Use the search form above to find specific posts.
+      {% endif %}
+    </p>
+  </div>
+
+  <div class="row">
+    {% for post in posts %}
+      <div class="col-12 mb-3">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <strong class="text-primary">{{ post.platform|capitalize if post.platform else "Unknown Platform" }}</strong>
+                <small class="text-muted ms-2">{{ post.timestamp.strftime('%b %d, %Y %H:%M') }}</small>
+              </div>
+              <div>
+                <span class="badge bg-{{ 'success' if post.predicted_sentiment == 'positive' else 'secondary' if post.predicted_sentiment == 'neutral' else 'danger' if post.predicted_sentiment == 'negative' else 'warning' }} me-1">
+                  {{ post.predicted_sentiment.capitalize() if post.predicted_sentiment else "Unknown" }}
+                </span>
+                {% if post.risk_flag %}
+                  <span class="badge bg-warning">⚠️ Flagged</span>
+                {% endif %}
+              </div>
+            </div>
+            
+            <p class="card-text mb-3">
+              {{ post.text[:150] }}{% if post.text|length > 150 %}...{% endif %}
+            </p>
+            
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">
+                {% if post.title %}
+                  Title: {{ post.title[:50] }}{% if post.title|length > 50 %}...{% endif %}
+                {% endif %}
+              </small>
+              <div>
+                <a href="{{ url_for('posts.post_detail', post_id=post.id) }}" class="btn btn-sm btn-outline-primary me-1">
+                  View Post
+                </a>
+                <a href="{{ url_for('posts.flag_post', post_id=post.id) }}" class="btn btn-sm btn-outline-warning">
+                  {{ 'Unflag' if post.risk_flag else 'Flag' }}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if not has_search_criteria and posts|length == 5 %}
+    <div class="text-center mt-4">
+      <div class="alert alert-info">
+        <p class="mb-2">Only showing 5 most recent posts. Use the search form to find more specific posts.</p>
+        <a href="{{ url_for('posts.search') }}?keyword=&platform=&sentiment=&date_from=&date_to=" class="btn btn-sm btn-outline-primary">
+          Show All Posts
+        </a>
+      </div>
+    </div>
+  {% endif %}
+
+{% else %}
+  <div class="alert alert-secondary text-center">
+    <p class="mb-0">No posts found matching the criteria.</p>
+    {% if has_search_criteria %}
+      <p class="mb-0 mt-2">Try adjusting your search filters.</p>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% endblock %}

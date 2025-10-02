@@ -9,6 +9,7 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
+        print(f"DEBUG: User already authenticated: {current_user.username}")
         return redirect(url_for("dashboard.index"))
 
     form = RegistrationForm()
@@ -20,6 +21,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
+        print(f"DEBUG: User created: {user.username}, redirecting to login")
         flash("Registration successful. Please log in.", "success")
         return redirect(url_for("auth.login"))
     return render_template("register.html", form=form)

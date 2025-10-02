@@ -2,7 +2,6 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from webapp.app import db, login_manager
-from datetime import datetime
 
 
 # --- User Model ---
@@ -18,10 +17,23 @@ class User(UserMixin, db.Model):
     profile_image = db.Column(db.String(255), nullable=True)  # store filename/path
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Relationship: one user can have many alerts
-    alerts = db.relationship("Alert", backref="user", lazy=True)
-    notifications = db.relationship("NotificationRead", backref="user", lazy=True)
-    read_notifications = db.relationship("NotificationRead", backref="read_by_user", lazy=True)
+    # Relationships - FIXED: Remove duplicate backref names
+    alerts = db.relationship("Alert", backref="alert_user", lazy=True)  # Changed backref name
+    posts = db.relationship("Post", backref="author", lazy=True)
+    
+    # Alert reads relationship
+    alert_reads = db.relationship(  # Renamed from read_alerts
+        "AlertRead", 
+        back_populates="user",
+        lazy=True
+    )
+    
+    # Notification reads relationship
+    notification_reads = db.relationship(
+        "NotificationRead", 
+        back_populates="user",
+        lazy=True
+    )
 
     def set_password(self, password: str):
         """Hashes and sets the user's password."""
@@ -47,18 +59,32 @@ class User(UserMixin, db.Model):
 # --- Alert Model ---
 class Alert(db.Model):
     __tablename__ = "alerts"
-
     id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.String(50), nullable=False)
+    post_id = db.Column(db.String(50), nullable=False)  # Changed back to String for external IDs
     reason = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-
-    # Foreign key to link alert to user
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
 
     def __repr__(self):
         return f"<Alert {self.post_id}: {self.reason}>"
+
+
+class AlertRead(db.Model):
+    __tablename__ = "alert_reads"
+    id = db.Column(db.Integer, primary_key=True)
+    alert_id = db.Column(db.Integer, db.ForeignKey('alerts.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    is_read = db.Column(db.Boolean, default=False)
+    read_at = db.Column(db.DateTime, nullable=True)
+    
+    # Constraints
+    __table_args__ = (db.UniqueConstraint('alert_id', 'user_id', name='uq_alert_user'),)
+    
+    # Relationships with back_populates
+    user = db.relationship("User", back_populates="alert_reads")  # Updated to match User model
+    alert = db.relationship("Alert", backref="read_statuses")
+
 
 class Post(db.Model):
     __tablename__ = "posts"
@@ -79,13 +105,7 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
 
     def __repr__(self):
-        return f"<Post {self.id}: {self.predicted_sentiment}>"  # Fixed this too
-
-
-# --- Flask-Login User Loader ---
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+        return f"<Post {self.id}: {self.predicted_sentiment}>"
 
 
 class Notification(db.Model):
@@ -93,10 +113,16 @@ class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=True)
     message = db.Column(db.String(255), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
-    created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # optional
-    # relationship
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow) 
+    
+    # Relationships
     post = db.relationship("Post", backref="notifications")
+    read_statuses = db.relationship(
+        "NotificationRead", 
+        back_populates="notification",
+        lazy=True
+    )
+
 
 class NotificationRead(db.Model):
     __tablename__ = "notification_reads"
@@ -105,5 +131,22 @@ class NotificationRead(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     is_read = db.Column(db.Boolean, default=False)
     read_at = db.Column(db.DateTime, nullable=True)
-    # constraints
+    
+    # Constraints
     __table_args__ = (db.UniqueConstraint('notification_id', 'user_id', name='uq_notif_user'),)
+    
+    # Relationships with back_populates
+    user = db.relationship(
+        "User", 
+        back_populates="notification_reads"
+    )
+    notification = db.relationship(
+        "Notification", 
+        back_populates="read_statuses"
+    )
+
+
+# --- Flask-Login User Loader ---
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))

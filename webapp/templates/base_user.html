@@ -204,20 +204,10 @@
             </li>
 
             <li>
-                <a href="{{ url_for('alerts.index') }}" class="{{ 'active' if request.path.startswith('/alerts') else '' }}">
-                    <i class="fa-solid fa-bell"></i> Alerts
-                    {% if unread_notifications_count %}
-                        <span class="badge bg-danger">{{ unread_notifications_count }}</span>
-                    {% endif %}
+                <a href="{{ url_for('posts.all_posts') }}" class="{{ 'active' if request.path.startswith('/posts/all') else '' }}">
+                    <i class="fa-solid fa-list"></i> All Posts
                 </a>
             </li>
-
-            <li>
-                <a href="{{ url_for('profile.index') }}" class="{{ 'active' if request.path.startswith('/profile') else '' }}">
-                    <i class="fa-solid fa-user"></i> Profile
-                </a>
-            </li>
-
 
             <li>
                 <a href="{{ url_for('posts.search') }}" class="{{ 'active' if request.path.startswith('/posts/search') else '' }}">
@@ -226,8 +216,32 @@
             </li>
 
             <li>
+                <a href="{{ url_for('alerts.index') }}" class="{{ 'active' if request.path.startswith('/alerts') else '' }}">
+                    <i class="fa-solid fa-bell"></i> Alerts
+                    {% if unread_alerts_count %}
+                        <span class="badge bg-danger">{{ unread_alerts_count }}</span>
+                    {% endif %}
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('notifications.index') }}" class="{{ 'active' if request.path.startswith('/notifications') else '' }}">
+                    <i class="fa-solid fa-envelope"></i> Notifications
+                    {% if unread_notifications_count %}
+                        <span class="badge bg-warning">{{ unread_notifications_count }}</span>
+                    {% endif %}
+                </a>
+            </li>
+
+            <li>
                 <a href="{{ url_for('analytics.sentiment_trends') }}" class="{{ 'active' if request.path.startswith('/analytics/sentiment-trends') else '' }}">
                     <i class="fa-solid fa-chart-line"></i> Sentiment Trends
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('profile.index') }}" class="{{ 'active' if request.path.startswith('/profile') else '' }}">
+                    <i class="fa-solid fa-user"></i> Profile
                 </a>
             </li>
 
@@ -239,7 +253,6 @@
         {% endif %}
     </ul>
 </aside>
-
 
 
     <!-- Overlay for mobile -->
@@ -255,7 +268,7 @@
     {% block footer %}
         <footer class="footer mt-auto py-4 bg-dark text-light">
             <div class="container text-center">
-                <small>&copy; {{ current_year }} StaffHub. All rights reserved.</small>
+                <small>&copy; {{ current_year }} CyberSentiment. All rights reserved.</small>
             </div>
         </footer>
     {% endblock %}

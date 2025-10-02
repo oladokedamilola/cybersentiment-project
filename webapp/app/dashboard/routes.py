@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from datetime import datetime
 from sqlalchemy import func, desc
 
-from webapp.models import Post, Alert, Notification  # adjust import paths if needed
+from webapp.models import Post, Alert, Notification, NotificationRead
 
 dashboard_bp = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 
@@ -18,9 +18,9 @@ def index():
         .group_by(Post.predicted_sentiment)
         .all()
     )
-    sentiment_counts_dict = {s.lower(): c for s, c in sentiment_counts}
+    sentiment_counts_dict = {s.lower(): c for s, c in sentiment_counts if s}
 
-    # fill defaults so template doesn’t break
+    # fill defaults so template doesn't break
     sentiment_counts = {
         "positive": sentiment_counts_dict.get("positive", 0),
         "neutral": sentiment_counts_dict.get("neutral", 0),
@@ -43,18 +43,15 @@ def index():
     last_updated = last_post.timestamp if last_post else datetime.now()
 
     # -----------------------------
-    # Unread notifications for current user
-    # (if you added NotificationRead model or user-specific link)
+    # Unread notifications for current user - FIXED
     # -----------------------------
-    unread_notifications = []
-    if hasattr(Notification, "users"):  # adjust if Notification has relationship
-        unread_notifications = (
-            Notification.query
-            .filter_by(read=False)  # or NotificationRead join logic
-            .order_by(Notification.timestamp.desc())
-            .limit(5)
-            .all()
-        )
+    # Get IDs of notifications the user has read
+    read_ids = {nr.notification_id for nr in current_user.notification_reads}
+    
+    # Get unread notifications (not in read_ids)
+    unread_notifications = Notification.query.filter(
+        ~Notification.id.in_(read_ids)
+    ).order_by(Notification.timestamp.desc()).limit(5).all()
 
     return render_template(
         "dashboard.html",
